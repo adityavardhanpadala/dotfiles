@@ -38,14 +38,19 @@ require("lazy").setup({
     }
   },
 
+  -- {
+  --   "folke/tokyonight.nvim",
+  --   lazy = false,
+  --   priority = 1000,
+  --   opts = {},
+  --   init = function()
+  --     vim.cmd [[colorscheme tokyonight]]
+  --   end,
+  -- },  
+  --
   {
-    "folke/tokyonight.nvim",
-    lazy = false,
-    priority = 1000,
-    opts = {},
-    init = function()
-      vim.cmd [[colorscheme tokyonight]]
-    end,
+    "shaunsingh/nord.nvim",
+
   },
 
   {
@@ -161,6 +166,7 @@ require("lazy").setup({
 })
 
 vim.cmd [[:AvanteSwitchProvider openai]]
+require('nord').set()
 
 vim.api.nvim_create_autocmd("BufReadPost", {
   pattern = "*",
@@ -179,6 +185,7 @@ local servers = {
   rust_analyzer = {},
   lua_ls = {
     Lua = {
+      diagnostics = {globals = "vim"},
       workspace = { checkThirdParty = false },
       telemetry = { enable = false },
     },
@@ -277,7 +284,6 @@ cmp.setup {
     { name = 'buffer' }
   },
 }
-
 
 -- Keymaps go here
 
