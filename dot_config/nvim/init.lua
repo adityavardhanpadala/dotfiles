@@ -22,7 +22,6 @@ vim.bo.expandtab = true
 -- Enable line number:Lss
 vim.wo.number = true
 
-
 require("lazy").setup({
   "folke/which-key.nvim",
   { "folke/neoconf.nvim", cmd = "Neoconf" },
@@ -38,21 +37,15 @@ require("lazy").setup({
     }
   },
 
-  -- {
-  --   "folke/tokyonight.nvim",
-  --   lazy = false,
-  --   priority = 1000,
-  --   opts = {},
-  --   init = function()
-  --     vim.cmd [[colorscheme tokyonight]]
-  --   end,
-  -- },  
-  --
   {
-    "shaunsingh/nord.nvim",
-
-  },
-
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {},
+    init = function()
+      vim.cmd [[colorscheme tokyonight]]
+    end,
+  },  
   {
     "nvim-telescope/telescope.nvim",
     dependencies = { 'nvim-lua/plenary.nvim' },
@@ -124,7 +117,16 @@ require("lazy").setup({
     lazy = false,
     version = false, -- set this if you want to always pull the latest change
     opts = {
-      -- add any opts here
+      provider = "openrouter",
+      vendors = {
+        ["openrouter"] = {
+          __inherited_from = 'openai',
+          endpoint = 'https://openrouter.ai/api/v1',
+          api_key_name = 'OPENROUTER_API_KEY',
+          model = 'anthropic/claude-3.5-sonnet',
+          -- model = 'google/gemini-2.0-flash-001',
+        },
+      },
     },
     -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
     build = "make",
@@ -164,9 +166,6 @@ require("lazy").setup({
     },
   },
 })
-
--- vim.cmd [[:AvanteSwitchProvider openai]]
-require('nord').set()
 
 vim.api.nvim_create_autocmd("BufReadPost", {
   pattern = "*",
