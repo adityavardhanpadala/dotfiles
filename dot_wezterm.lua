@@ -8,7 +8,7 @@ config = wezterm.config_builder()
 config.color_scheme = 'nord'
 -- config.color_scheme = 'nightfox'
 config.tab_bar_at_bottom = false
-config.font = wezterm.font("CaskaydiaCove Nerd Font", {weight="Regular"})
+config.font = wezterm.font("Iosevka Nerd Font", {weight="Medium"})
 config.font_size = 11
 
 config.window_padding = {
