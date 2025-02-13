@@ -5,7 +5,7 @@ local config = {}
 
 config = wezterm.config_builder()
 
-config.color_scheme = 'nord'
+config.color_scheme = 'tokyonight-storm'
 -- config.color_scheme = 'nightfox'
 config.tab_bar_at_bottom = false
 config.font = wezterm.font("Iosevka Nerd Font", {weight="Medium"})

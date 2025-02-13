@@ -84,7 +84,18 @@ require("lazy").setup({
     },
     config = function()
       require("nvim-tree").setup {};
-      vim.keymap.set('n', '<leader>t', vim.cmd.NvimTreeToggle)
+      vim.keymap.set('n', '<leader>t', function()
+        local view = require('nvim-tree.view')
+        if view.is_visible() then
+          if vim.api.nvim_get_current_win() == view.get_winnr() then
+            vim.cmd.NvimTreeToggle()
+          else
+            vim.cmd.NvimTreeFocus()
+          end
+        else
+          vim.cmd.NvimTreeToggle()
+        end
+      end)
     end,
   },
   --- The Return of The Treesitter
