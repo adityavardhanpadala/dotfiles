@@ -24,7 +24,7 @@ vim.wo.number = true
 
 require("lazy").setup({
   "folke/which-key.nvim",
-  { "folke/neoconf.nvim", cmd = "Neoconf" },
+  { "folke/neoconf.nvim",       cmd = "Neoconf" },
   "folke/neodev.nvim",
   {
     "folke/which-key.nvim",
@@ -36,16 +36,14 @@ require("lazy").setup({
     opts = {
     }
   },
-
-  {
-    "folke/tokyonight.nvim",
-    lazy = false,
+  { "ellisonleao/gruvbox.nvim",
     priority = 1000,
+    config = true,
     opts = {},
     init = function()
-      vim.cmd [[colorscheme tokyonight]]
+      vim.cmd [[colorscheme gruvbox]]
     end,
-  },  
+  },
   {
     "nvim-telescope/telescope.nvim",
     dependencies = { 'nvim-lua/plenary.nvim' },
@@ -55,13 +53,44 @@ require("lazy").setup({
     'nmac427/guess-indent.nvim',
     config = function() require('guess-indent').setup {} end,
   },
-  -- Autocomplete
+  
+  -- Blink.cmp (Replaces nvim-cmp)
   {
-    'hrsh7th/nvim-cmp',
-    'hrsh7th/cmp-nvim-lsp',
-    'L3MON4D3/LuaSnip',
-    'github/copilot.vim',
+    'Saghen/blink.cmp',
+    version = '1.*',
+    dependencies = {
+      'neovim/nvim-lspconfig',
+      'L3MON4D3/LuaSnip',  -- Keeping your snippet engine
+    },
+    opts = {
+      -- Configure keymap - this is a top-level field
+      keymap = {
+        preset = 'default',
+        -- Add any custom keymaps
+        ['<C-d>'] = { 'scroll_documentation_down', 'fallback' },
+        ['<C-f>'] = { 'scroll_documentation_up', 'fallback' },
+        ['<C-Space>'] = { 'show', 'fallback' },
+        ['<CR>'] = { 'accept', 'fallback' },
+        ['<Tab>'] = { 'select_next', 'fallback' },
+        ['<S-Tab>'] = { 'select_prev', 'fallback' },
+      },
+      completion = { documentation = { auto_show = true } },
+      -- Configure sources
+      sources = {
+        default = {
+          'lsp',           -- LSP completions
+          'snippets',      -- Snippet completions
+          'buffer',        -- Buffer-based completions
+          'path',          -- Path completions
+        },
+      },
+      fuzzy = { implementation = "prefer_rust_with_warning" },
+    },
+    opts_extend = { "sources.default" }
   },
+
+  -- For Copilot, maintain it but as a dependency of blink.cmp
+  { 'github/copilot.vim', },
 
   -- Fucking LSP garbage
   {
@@ -121,7 +150,9 @@ require("lazy").setup({
       require("bufferline").setup {}
     end
   },
-
+  {
+    'tjdevries/present.nvim'
+  },
   {
     "yetone/avante.nvim",
     event = "VeryLazy",
@@ -148,7 +179,7 @@ require("lazy").setup({
       "MunifTanjim/nui.nvim",
       --- The below dependencies are optional,
       "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-      "zbirenbaum/copilot.lua",    -- for providers='copilot'
+      "zbirenbaum/copilot.lua",      -- for providers='copilot'
       {
         -- support for image pasting
         "HakonHarnes/img-clip.nvim",
@@ -195,7 +226,7 @@ local servers = {
   rust_analyzer = {},
   lua_ls = {
     Lua = {
-      diagnostics = {globals = "vim"},
+      diagnostics = { globals = "vim" },
       workspace = { checkThirdParty = false },
       telemetry = { enable = false },
     },
@@ -239,9 +270,9 @@ local on_attach = function(_, bufnr)
   end, { desc = 'Format current buffer with LSP' })
 end
 
-
+-- Update this to use blink.cmp's LSP capabilities
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
 
 mason_lspconfig.setup_handlers {
   function(server_name)
@@ -253,47 +284,9 @@ mason_lspconfig.setup_handlers {
   end,
 }
 
-local cmp = require 'cmp'
+-- LuaSnip setup (maintained for compatibility)
 local luasnip = require 'luasnip'
-
 luasnip.config.setup {}
-
-cmp.setup {
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
-  },
-  mapping = cmp.mapping.preset.insert {
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete {},
-    ['<CR>'] = cmp.mapping.confirm({ select = true }),
-    ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-  },
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'luasnip' },
-    { name = 'buffer' }
-  },
-}
 
 -- Keymaps go here
 
