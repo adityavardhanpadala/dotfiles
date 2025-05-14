@@ -93,8 +93,8 @@ require("lazy").setup({
   { 'github/copilot.vim', },
 
   -- Fucking LSP garbage
-  "williamboman/mason.nvim",
-  "williamboman/mason-lspconfig.nvim",
+  "mason-org/mason.nvim",
+  "mason-org/mason-lspconfig.nvim",
   "neovim/nvim-lspconfig",
 
   {
@@ -284,9 +284,19 @@ local on_attach = function(_, bufnr)
   end, { desc = 'Format current buffer with LSP' })
 end
 
--- Update this to use blink.cmp's LSP capabilities
+-- use blink.cmp's LSP capabilities
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
+
+vim.lsp.config('*', {
+  capabilities = capabilities,
+  on_attach = on_attach,
+})
+
+for name, cfg in pairs(servers) do
+  vim.lsp.config(name, { settings = cfg })
+end
+
 
 
 require('neodev').setup()
@@ -295,17 +305,7 @@ local mason_lspconfig = require("mason-lspconfig")
 
 mason_lspconfig.setup {
   ensure_installed = vim.tbl_keys(servers),
-  handlers = {
-    function(server_name)
-      -- Log loading the server_name
-      print("Loading LSP: " .. server_name, vim.log.levels.INFO)
-      require("lspconfig")[server_name].setup {
-        capabilities = capabilities,
-        on_attach = on_attach,
-        settings = servers[server_name],
-      }
-    end,
-  },
+  automatic_enable = true,
 }
 
 -- LuaSnip setup (maintained for compatibility)
