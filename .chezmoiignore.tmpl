@@ -1,0 +1,11 @@
+# Keep Sway configs off Windows
+{{ if eq .chezmoi.os "windows" }}
+bin
+.config
+{{ end }}
+
+# Keep Windows‑only scripts off Linux
+{{ if ne .chezmoi.os "windows" }}
+AppData
+{{ end }}
+

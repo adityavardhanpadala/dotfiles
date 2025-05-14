@@ -53,7 +53,7 @@ require("lazy").setup({
     'nmac427/guess-indent.nvim',
     config = function() require('guess-indent').setup {} end,
   },
-  
+
   -- Blink.cmp (Replaces nvim-cmp)
   {
     'Saghen/blink.cmp',
@@ -208,6 +208,8 @@ require("lazy").setup({
     },
   },
 })
+
+require('nvim-treesitter.install').compilers = { 'clang' }
 
 vim.api.nvim_create_autocmd("BufReadPost", {
   pattern = "*",
