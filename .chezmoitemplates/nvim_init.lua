@@ -159,7 +159,7 @@ require("lazy").setup({
     lazy = false,
     version = false, -- set this if you want to always pull the latest change
     opts = {
-      provider = "openrouter",
+      provider = "copilot",
       vendors = {
         ["openrouter"] = {
           __inherited_from = 'openai',
@@ -237,11 +237,19 @@ local servers = {
 
 require('neodev').setup()
 require("mason").setup()
-
 local mason_lspconfig = require("mason-lspconfig")
 
 mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers)
+  ensure_installed = vim.tbl_keys(servers),
+  handlers = {
+    function(server_name)
+      require("lspconfig")[server_name].setup {
+        capabilities = capabilities,
+        on_attach = on_attach,
+        settings = servers[server_name],
+      }
+    end,
+  },
 }
 
 local on_attach = function(_, bufnr)
@@ -275,16 +283,6 @@ end
 -- Update this to use blink.cmp's LSP capabilities
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
-
-mason_lspconfig.setup_handlers {
-  function(server_name)
-    require('lspconfig')[server_name].setup {
-      capabilities = capabilities,
-      on_attach = on_attach,
-      settings = servers[server_name],
-    }
-  end,
-}
 
 -- LuaSnip setup (maintained for compatibility)
 local luasnip = require 'luasnip'
