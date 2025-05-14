@@ -93,11 +93,9 @@ require("lazy").setup({
   { 'github/copilot.vim', },
 
   -- Fucking LSP garbage
-  {
-    "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
-    "neovim/nvim-lspconfig",
-  },
+  "williamboman/mason.nvim",
+  "williamboman/mason-lspconfig.nvim",
+  "neovim/nvim-lspconfig",
 
   {
     'mbbill/undotree',
@@ -207,6 +205,24 @@ require("lazy").setup({
       },
     },
   },
+  -- almighty osc copy
+  {
+    "ojroques/nvim-osc52",
+    config = function()
+      require("osc52").setup({
+        max_length = 0, -- Maximum length of selection (0 for no limit)
+        silent = false, -- Disable message on successful copy
+        trim = false, -- Trim surrounding whitespaces before copy
+      })
+      local function copy()
+        if (vim.v.event.operator == "y" or vim.v.event.operator == "d") and vim.v.event.regname == "" then
+          require("osc52").copy_register("")
+        end
+      end
+
+      vim.api.nvim_create_autocmd("TextYankPost", { callback = copy })
+    end,
+  }
 })
 
 require('nvim-treesitter.install').compilers = { 'clang' }
@@ -220,6 +236,11 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     end
   end
 })
+
+-- Clipboard setup
+vim.opt.clipboard = "unnamedplus"
+-- vim.g.clipboard = require('vim.ui.clipboard.osc52')
+
 -- LSP Configuration
 
 local servers = {
@@ -232,23 +253,6 @@ local servers = {
       workspace = { checkThirdParty = false },
       telemetry = { enable = false },
     },
-  },
-}
-
-require('neodev').setup()
-require("mason").setup()
-local mason_lspconfig = require("mason-lspconfig")
-
-mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
-  handlers = {
-    function(server_name)
-      require("lspconfig")[server_name].setup {
-        capabilities = capabilities,
-        on_attach = on_attach,
-        settings = servers[server_name],
-      }
-    end,
   },
 }
 
@@ -283,6 +287,26 @@ end
 -- Update this to use blink.cmp's LSP capabilities
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
+
+
+require('neodev').setup()
+require("mason").setup()
+local mason_lspconfig = require("mason-lspconfig")
+
+mason_lspconfig.setup {
+  ensure_installed = vim.tbl_keys(servers),
+  handlers = {
+    function(server_name)
+      -- Log loading the server_name
+      print("Loading LSP: " .. server_name, vim.log.levels.INFO)
+      require("lspconfig")[server_name].setup {
+        capabilities = capabilities,
+        on_attach = on_attach,
+        settings = servers[server_name],
+      }
+    end,
+  },
+}
 
 -- LuaSnip setup (maintained for compatibility)
 local luasnip = require 'luasnip'
