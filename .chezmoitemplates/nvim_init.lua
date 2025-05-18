@@ -239,7 +239,6 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 
 -- Clipboard setup
 vim.opt.clipboard = "unnamedplus"
--- vim.g.clipboard = require('vim.ui.clipboard.osc52')
 
 -- LSP Configuration
 
@@ -296,7 +295,6 @@ vim.lsp.config('*', {
 for name, cfg in pairs(servers) do
   vim.lsp.config(name, { settings = cfg })
 end
-
 
 
 require('neodev').setup()
