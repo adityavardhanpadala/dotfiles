@@ -10,6 +10,7 @@ config.color_scheme = 'tokyonight-storm'
 config.tab_bar_at_bottom = false
 config.font = wezterm.font("Iosevka Nerd Font", {weight="Medium"})
 config.font_size = 11
+config.audible_bell = "Disabled"
 
 config.window_padding = {
   left = 2,
