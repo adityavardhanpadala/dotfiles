@@ -14,16 +14,19 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term wezterm 
+set $term kitty 
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu dmenu_path | wmenu | xargs swaymsg exec --
+set $menu wofi --show drun | xargs swaymsg exec --
 
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /home/silverf3lix/Pictures/fire.png fill
+output * bg /home/silverf3lix/Pictures/wallpaper.png fill
+
+# Rotate DP-2 and position it to the left of DP-1
+exec wlr-randr --output DP-2 --transform 90 --left-of DP-1
 #
 # Example configuration:
 #
@@ -82,7 +85,7 @@ default_border pixel 2
     # Despite the name, also works for non-floating windows.
     # Change normal to inverse to use left mouse button for resizing and right
     # mouse button for dragging.
-    floating_modifier $mod normal
+    floating_modifier Mod1 normal
 
     # Reload the configuration file
     bindsym $mod+Shift+c reload
@@ -202,6 +205,7 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
+bindsym $mod+x exec swaylock
 #
 # Status Bar:
 #
