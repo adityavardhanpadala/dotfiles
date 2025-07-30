@@ -23,8 +23,11 @@ vim.bo.expandtab = true
 vim.wo.number = true
 
 require("lazy").setup({
+  defaults = {
+    version = false,
+  },
   "folke/which-key.nvim",
-  { "folke/neoconf.nvim",       cmd = "Neoconf" },
+  { "folke/neoconf.nvim", cmd = "Neoconf" },
   "folke/neodev.nvim",
   {
     "folke/which-key.nvim",
@@ -36,7 +39,8 @@ require("lazy").setup({
     opts = {
     }
   },
-  { "ellisonleao/gruvbox.nvim",
+  {
+    "ellisonleao/gruvbox.nvim",
     priority = 1000,
     config = true,
     opts = {},
@@ -54,7 +58,7 @@ require("lazy").setup({
   {
     "nvim-telescope/telescope.nvim",
     dependencies = { 'nvim-lua/plenary.nvim' },
-    config = function() 
+    config = function()
       require("telescope").setup({})
     end,
   },
@@ -70,7 +74,7 @@ require("lazy").setup({
     version = '1.*',
     dependencies = {
       'neovim/nvim-lspconfig',
-      'L3MON4D3/LuaSnip',  -- Keeping your snippet engine
+      'L3MON4D3/LuaSnip', -- Keeping your snippet engine
     },
     opts = {
       -- Configure keymap - this is a top-level field
@@ -88,10 +92,10 @@ require("lazy").setup({
       -- Configure sources
       sources = {
         default = {
-          'lsp',           -- LSP completions
-          'snippets',      -- Snippet completions
-          'buffer',        -- Buffer-based completions
-          'path',          -- Path completions
+          'lsp',      -- LSP completions
+          'snippets', -- Snippet completions
+          'buffer',   -- Buffer-based completions
+          'path',     -- Path completions
         },
       },
       fuzzy = { implementation = "prefer_rust_with_warning" },
@@ -108,6 +112,8 @@ require("lazy").setup({
     'mbbill/undotree',
     config = function()
       vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
+      vim.opt.undofile = true
+      vim.opt.undodir = vim.fn.expand("~/.undodir")
     end,
   },
   {
@@ -159,60 +165,65 @@ require("lazy").setup({
     'tjdevries/present.nvim'
   },
   {
-  "yetone/avante.nvim",
-  event = "VeryLazy",
-  lazy = false,
-  version = false, -- set this if you want to always pull the latest change
-  opts = {
-    provider = "copilot",
-    providers = {
-      ["openrouter"] = {
-        __inherited_from = 'openai',
-        endpoint = 'https://openrouter.ai/api/v1',
-        api_key_name = 'OPENROUTER_API_KEY',
-        model = 'anthropic/claude-3.5-sonnet',
-        -- model = 'google/gemini-2.0-flash-001',
-      },
-    },
-  },
-  -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-  build = "make",
-  dependencies = {
-    "nvim-treesitter/nvim-treesitter",
-    "stevearc/dressing.nvim",
-    "nvim-lua/plenary.nvim",
-    "MunifTanjim/nui.nvim",
-    --- The below dependencies are optional,
-    "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-    "zbirenbaum/copilot.lua",      -- for providers='copilot'
-    {
-      -- support for image pasting
-      "HakonHarnes/img-clip.nvim",
-      event = "VeryLazy",
-      opts = {
-        -- recommended settings
-        default = {
-          embed_image_as_base64 = false,
-          prompt_for_file_name = false,
-          drag_and_drop = {
-            insert_mode = true,
-          },
-          -- required for Windows users
-          use_absolute_path = true,
+    "yetone/avante.nvim",
+    event = "VeryLazy",
+    lazy = false,
+    version = false, -- set this if you want to always pull the latest change
+    opts = {
+      provider = "groq",
+      providers = {
+        ["openrouter"] = {
+          __inherited_from = 'openai',
+          endpoint = 'https://openrouter.ai/api/v1',
+          api_key_name = 'OPENROUTER_API_KEY',
+          model = 'anthropic/claude-3.5-sonnet',
+        },
+        ["groq"] = {
+          __inherited_from = 'openai',
+          endpoint = "https://api.groq.com/openai/v1",
+          api_key_name = 'GROQ_API_KEY',
+          model = "moonshotai/kimi-k2-instruct",
         },
       },
     },
-    {
-      -- Make sure to set this up properly if you have lazy=true
-      'MeanderingProgrammer/render-markdown.nvim',
-      opts = {
-        file_types = { "markdown", "Avante" },
+    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    build = "make",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "stevearc/dressing.nvim",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      --- The below dependencies are optional,
+      "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+      "zbirenbaum/copilot.lua",    -- for providers='copilot'
+      {
+        -- support for image pasting
+        "HakonHarnes/img-clip.nvim",
+        event = "VeryLazy",
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+            -- required for Windows users
+            use_absolute_path = true,
+          },
+        },
       },
-      ft = { "markdown", "Avante" },
+      {
+        -- Make sure to set this up properly if you have lazy=true
+        'MeanderingProgrammer/render-markdown.nvim',
+        opts = {
+          file_types = { "markdown", "Avante" },
+        },
+        ft = { "markdown", "Avante" },
+      },
     },
   },
-},
-   
+
   -- almighty osc copy
   {
     "ojroques/nvim-osc52",
@@ -220,7 +231,7 @@ require("lazy").setup({
       require("osc52").setup({
         max_length = 0, -- Maximum length of selection (0 for no limit)
         silent = false, -- Disable message on successful copy
-        trim = false, -- Trim surrounding whitespaces before copy
+        trim = false,   -- Trim surrounding whitespaces before copy
       })
       local function copy()
         if (vim.v.event.operator == "y" or vim.v.event.operator == "d") and vim.v.event.regname == "" then
@@ -283,7 +294,7 @@ local on_attach = function(_, bufnr)
   nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
   nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
   nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-  
+
   -- See `:help K` for why this keymap
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
   nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
@@ -334,5 +345,3 @@ vim.keymap.set('n', '<leader>fh', require('telescope.builtin').help_tags, { desc
 vim.keymap.set('n', '<leader>fw', require('telescope.builtin').grep_string, { desc = '[F]ind current [W]ord' })
 vim.keymap.set('n', '<leader>fg', require('telescope.builtin').live_grep, { desc = '[F]ind by [G]rep' })
 vim.keymap.set('n', '<leader>fd', require('telescope.builtin').diagnostics, { desc = '[F]ind [D]iagnostics' })
-
-
