@@ -244,7 +244,22 @@ require("lazy").setup({
   }
 })
 
-require("copilot").setup()
+require("copilot").setup({
+  suggestion = {
+    enabled = true,
+    auto_trigger = true,
+    keymap = {
+      accept = "<C-l>",            -- Accept Copilot suggestion
+      accept_word = false,         -- Or set to a custom key
+      accept_line = false,         -- Or set to a custom key
+      next = "<M-]>",              -- Next Copilot suggestion
+      prev = "<M-[>",              -- Previous Copilot suggestion
+      dismiss = "<C-]>",           -- Dismiss Copilot suggestion
+    },
+  },
+  panel = { enabled = true },
+})
+
 
 require('nvim-treesitter.install').compilers = { 'clang' }
 
@@ -265,7 +280,8 @@ vim.opt.clipboard = "unnamedplus"
 
 local servers = {
   clangd = {},
-  pyright = {},
+  basedpyright = {},
+  ruff = {},
   rust_analyzer = {},
   lua_ls = {
     Lua = {
@@ -304,18 +320,49 @@ local on_attach = function(_, bufnr)
   end, { desc = 'Format current buffer with LSP' })
 end
 
+
 -- use blink.cmp's LSP capabilities
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
+local capabilities = require('blink.cmp').get_lsp_capabilities(
+  vim.lsp.protocol.make_client_capabilities()
+)
 
 vim.lsp.config('*', {
   capabilities = capabilities,
   on_attach = on_attach,
 })
 
-for name, cfg in pairs(servers) do
-  vim.lsp.config(name, { settings = cfg })
+-- Configure LSP virtual text diagnostics
+vim.diagnostic.config({
+  virtual_text = true, -- Enable virtual text by default
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true,
+  virtual_lines = false,
+})
+
+-- Toggle virtual text function
+function _G.toggle_virtual_text()
+  local current_config = vim.diagnostic.config()
+  vim.diagnostic.config({
+    virtual_text = not current_config.virtual_text,
+  })
+  if current_config.virtual_text then
+    print("Virtual text diagnostics disabled")
+  else
+    print("Virtual text diagnostics enabled")
+  end
 end
+
+for name, cfg in pairs(servers) do
+  vim.lsp.config(name, { 
+    settings = cfg,
+    capabilities = capabilities,
+    on_attach = on_attach,
+  })
+end
+
+vim.lsp.enable(vim.tbl_keys(servers))
 
 
 require('neodev').setup()
@@ -326,6 +373,9 @@ mason_lspconfig.setup {
   ensure_installed = vim.tbl_keys(servers),
   automatic_enable = true,
 }
+
+-- Keymap to toggle virtual text diagnostics
+vim.keymap.set('n', '<leader>sv', toggle_virtual_text, { desc = 'Switch Virtual text diagnostics' })
 
 -- LuaSnip setup (maintained for compatibility)
 local luasnip = require 'luasnip'
@@ -345,3 +395,4 @@ vim.keymap.set('n', '<leader>fh', require('telescope.builtin').help_tags, { desc
 vim.keymap.set('n', '<leader>fw', require('telescope.builtin').grep_string, { desc = '[F]ind current [W]ord' })
 vim.keymap.set('n', '<leader>fg', require('telescope.builtin').live_grep, { desc = '[F]ind by [G]rep' })
 vim.keymap.set('n', '<leader>fd', require('telescope.builtin').diagnostics, { desc = '[F]ind [D]iagnostics' })
+
