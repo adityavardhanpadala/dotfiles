@@ -75,6 +75,7 @@ require("lazy").setup({
     dependencies = {
       'neovim/nvim-lspconfig',
       'L3MON4D3/LuaSnip', -- Keeping your snippet engine
+      'fang2hou/blink-copilot',
     },
     opts = {
       -- Configure keymap - this is a top-level field
@@ -93,12 +94,28 @@ require("lazy").setup({
       sources = {
         default = {
           'lsp',      -- LSP completions
+          'copilot',  -- Copilot completions
           'snippets', -- Snippet completions
           'buffer',   -- Buffer-based completions
           'path',     -- Path completions
         },
+        providers = {
+          copilot = {
+            name = "copilot",
+            module = "blink-copilot",
+            score_offset = -100,
+            async = true,
+          }
+        },
       },
-      fuzzy = { implementation = "prefer_rust_with_warning" },
+      fuzzy = {
+        sorts = {
+          'score',
+          'sort_text',
+          'label',
+        },
+        implementation = "prefer_rust_with_warning"
+      },
     },
     opts_extend = { "sources.default" }
   },
@@ -168,7 +185,7 @@ require("lazy").setup({
     "yetone/avante.nvim",
     event = "VeryLazy",
     lazy = false,
-    version = false, -- set this if you want to always pull the latest change
+    version = false, -- set this if you want to always pull the latest changes
     opts = {
       provider = "groq",
       providers = {
@@ -187,7 +204,7 @@ require("lazy").setup({
       },
     },
     -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-    build = "make",
+    build = "make BUILD_FROM_SOURCE=true",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
       "stevearc/dressing.nvim",
@@ -195,7 +212,7 @@ require("lazy").setup({
       "MunifTanjim/nui.nvim",
       --- The below dependencies are optional,
       "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-      "zbirenbaum/copilot.lua",    -- for providers='copilot'
+      "zbirenbaum/copilot.lua",      -- for providers='copilot'
       {
         -- support for image pasting
         "HakonHarnes/img-clip.nvim",
@@ -247,14 +264,14 @@ require("lazy").setup({
 require("copilot").setup({
   suggestion = {
     enabled = true,
-    auto_trigger = true,
+    auto_trigger = false,
     keymap = {
-      accept = "<C-l>",            -- Accept Copilot suggestion
-      accept_word = false,         -- Or set to a custom key
-      accept_line = false,         -- Or set to a custom key
-      next = "<M-]>",              -- Next Copilot suggestion
-      prev = "<M-[>",              -- Previous Copilot suggestion
-      dismiss = "<C-]>",           -- Dismiss Copilot suggestion
+      accept = "<C-l>",    -- Accept Copilot suggestion
+      accept_word = false, -- Or set to a custom key
+      accept_line = false, -- Or set to a custom key
+      next = "<M-]>",      -- Next Copilot suggestion
+      prev = "<M-[>",      -- Previous Copilot suggestion
+      dismiss = "<C-]>",   -- Dismiss Copilot suggestion
     },
   },
   panel = { enabled = true },
@@ -300,7 +317,6 @@ local on_attach = function(_, bufnr)
 
     vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
   end
-
   nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
   nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
@@ -355,7 +371,7 @@ function _G.toggle_virtual_text()
 end
 
 for name, cfg in pairs(servers) do
-  vim.lsp.config(name, { 
+  vim.lsp.config(name, {
     settings = cfg,
     capabilities = capabilities,
     on_attach = on_attach,
@@ -395,4 +411,3 @@ vim.keymap.set('n', '<leader>fh', require('telescope.builtin').help_tags, { desc
 vim.keymap.set('n', '<leader>fw', require('telescope.builtin').grep_string, { desc = '[F]ind current [W]ord' })
 vim.keymap.set('n', '<leader>fg', require('telescope.builtin').live_grep, { desc = '[F]ind by [G]rep' })
 vim.keymap.set('n', '<leader>fd', require('telescope.builtin').diagnostics, { desc = '[F]ind [D]iagnostics' })
-
