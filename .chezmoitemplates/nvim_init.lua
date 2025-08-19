@@ -105,6 +105,13 @@ require("lazy").setup({
             module = "blink-copilot",
             score_offset = -100,
             async = true,
+            transform_items = function(ctx, items)
+              for _, item in ipairs(items) do
+                item.kind_icon = ''
+                item.kind_name = 'Copilot'
+              end
+              return items
+            end
           }
         },
       },
@@ -124,7 +131,6 @@ require("lazy").setup({
   "mason-org/mason.nvim",
   "mason-org/mason-lspconfig.nvim",
   "neovim/nvim-lspconfig",
-
   {
     'mbbill/undotree',
     config = function()
@@ -349,14 +355,13 @@ vim.lsp.config('*', {
 
 -- Configure LSP virtual text diagnostics
 vim.diagnostic.config({
-  virtual_text = true, -- Enable virtual text by default
+  virtual_text = false, -- Enable virtual text by default
   signs = true,
   underline = true,
   update_in_insert = false,
   severity_sort = true,
   virtual_lines = false,
 })
-
 -- Toggle virtual text function
 function _G.toggle_virtual_text()
   local current_config = vim.diagnostic.config()
