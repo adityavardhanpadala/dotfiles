@@ -40,13 +40,25 @@ require("lazy").setup({
     }
   },
   {
-    "ellisonleao/gruvbox.nvim",
-    priority = 1000,
-    config = true,
-    opts = {},
-    init = function()
-      vim.cmd [[colorscheme gruvbox]]
-    end,
+    "navarasu/onedark.nvim",
+    priority = 1000, -- make sure to load this before all the other start plugins
+    config = function()
+      require('onedark').setup {
+        style = 'deep'
+      }
+      -- Enable theme
+      require('onedark').load()
+    end
+  },
+  {
+    'romgrk/barbar.nvim',
+    dependencies = {
+      'lewis6991/gitsigns.nvim',     -- OPTIONAL: for git status
+      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+    },
+    init = function() vim.g.barbar_auto_setup = false end,
+    opts = {
+    },
   },
   {
     'nvim-lualine/lualine.nvim',
@@ -175,15 +187,14 @@ require("lazy").setup({
       })
     end
   },
-
-  {
-    'akinsho/bufferline.nvim',
-    version = "*",
-    dependencies = 'nvim-tree/nvim-web-devicons',
-    config = function()
-      require("bufferline").setup {}
-    end
-  },
+  -- {
+  --   'akinsho/bufferline.nvim',
+  --   version = "*",
+  --   dependencies = 'nvim-tree/nvim-web-devicons',
+  --   config = function()
+  --     require("bufferline").setup {}
+  --   end
+  -- },
   {
     'tjdevries/present.nvim'
   },
