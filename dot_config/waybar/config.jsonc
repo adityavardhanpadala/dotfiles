@@ -5,6 +5,7 @@
   "spacing": 0,
   "modules-left": [
     "hyprland/workspaces",
+    "mpris",
     "tray",
     "custom/lock"
   ],
