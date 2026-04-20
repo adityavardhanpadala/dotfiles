@@ -1,0 +1,67 @@
+{
+  "providers": {
+    "fireworks": {
+      "baseUrl": "https://api.fireworks.ai/inference/v1",
+      "api": "openai-completions",
+      "apiKey": {{ env "PI_FIREWORKS_API_KEY" | quote }},
+      "models": [
+        {
+          "id": "accounts/fireworks/models/kimi-k2p5",
+          "name": "Kimi K2.5 (Fireworks)",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0.6,
+            "output": 3.0,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "accounts/fireworks/models/minimax-m2p7",
+          "name": "Minimax M2.7 (Fireworks)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 196000,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0.3,
+            "output": 1.2,
+            "cacheRead": 0.06,
+            "cacheWrite": 0
+          }
+        }
+      ]
+    },
+    "baseten": {
+      "baseUrl": "https://inference.baseten.co/v1",
+      "api": "openai-completions",
+      "apiKey": {{ env "PI_BASETEN_API_KEY" | quote }},
+      "models": [
+        {
+          "id": "moonshotai/Kimi-K2.5",
+          "name": "moonshotai/Kimi-K2.5",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 128000,
+          "maxTokens": 16384,
+          "cost": {
+            "input": 0.6,
+            "output": 3,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        }
+      ]
+    }
+  }
+}
